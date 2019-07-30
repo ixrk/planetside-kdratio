@@ -1,4 +1,4 @@
-package ixrk.planetside.kdratio;
+package ixrk.planetside2.kdratio;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

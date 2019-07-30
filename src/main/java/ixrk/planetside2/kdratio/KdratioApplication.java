@@ -1,4 +1,4 @@
-package ixrk.planetside.kdratio;
+package ixrk.planetside2.kdratio;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
