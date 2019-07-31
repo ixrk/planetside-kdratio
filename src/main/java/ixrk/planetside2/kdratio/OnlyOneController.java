@@ -22,6 +22,7 @@ public class OnlyOneController {
     public String controller(@RequestParam(required = false) String characterName, Model model) {
         if (characterName != null) {
             CharactersStatDTO stats = charactersStatService.kdStats(characterName);
+            model.addAttribute("characterName", characterName);
             model.addAttribute("stats", stats.getMap());
         }
 
