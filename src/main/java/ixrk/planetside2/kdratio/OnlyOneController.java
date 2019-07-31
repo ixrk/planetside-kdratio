@@ -19,11 +19,10 @@ public class OnlyOneController {
     }
 
     @RequestMapping("/")
-    @GetMapping
     public String controller(@RequestParam(required = false) String characterName, Model model) {
         if (characterName != null) {
             CharactersStatDTO stats = charactersStatService.kdStats(characterName);
-            model.addAttribute("stats", stats);
+            model.addAttribute("stats", stats.getMap());
         }
 
         return "index";

@@ -9,13 +9,13 @@
 <form action="/">
     <fieldset>
         <label for="character_name">Character name:</label>
-        <input id="character_name" type="text" name="character_name">
+        <input id="character_name" type="text" name="characterName">
     </fieldset>
 </form>
 
 <table>
     <tbody>
-        <tr th:each="stat : ${stats.map}">
+        <tr th:each="stat : ${stats}">
             <td th:text="${stat.key}"></td>
             <td th:text="${stat.value}"></td>
         </tr>
