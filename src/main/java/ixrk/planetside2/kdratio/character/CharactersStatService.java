@@ -5,20 +5,42 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 public class CharactersStatService {
 
-    private final String baseUrl = "census.daybreakgames.com/s:example/get/ps2:v2/";
+    private final String baseUrl = "http://census.daybreakgames.com/s:example/get/ps2:v2/";
 
     public CharactersStatDTO kdStats(String characterName) {
-        return null;
+        Map<String, Integer> allStats = statsByCharacterName(characterName);
+        Map<String, Integer> kdStatsMap = allStats.entrySet().stream()
+                .filter(v -> v.getKey().startsWith("kills") || v.getKey().startsWith("deaths"))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, String> resultMap = new LinkedHashMap<>();
+        resultMap.put("All Time K/D", String.format("%.3f", calculateRatio(kdStatsMap.get("killsAllTime"), kdStatsMap.get("deathsAllTime"))));
+        resultMap.put("One Life Max K/D", String.format("%.3f", calculateRatio(kdStatsMap.get("killsOneLifeMax"), kdStatsMap.get("deathsOneLifeMax"))));
+        resultMap.put("Last 30 Days K/D", String.format("%.3f", calculateRatio(kdStatsMap.get("killsLast30Days"), kdStatsMap.get("deathsLast30Days"))));
+
+        return new CharactersStatDTO(resultMap);
     }
 
-    private Map<String, String> statsByCharacterName(String characterName) {
+    private double calculateRatio(int a, int b) {
+        BigDecimal result = new BigDecimal(1);
+        try {
+            result = result.multiply(BigDecimal.valueOf(a));
+            result = result.divide(BigDecimal.valueOf(b), 3, RoundingMode.HALF_UP);
+        } catch (ArithmeticException e) {
+            result = BigDecimal.valueOf(a);
+        }
+        return result.doubleValue();
+    }
+
+    private Map<String, Integer> statsByCharacterName(String characterName) {
         CharacterResult characterResult = fetchCharacter(characterName.toLowerCase());
         if (characterResult.getReturned() != 1) {
             throw new RuntimeException("DayBreak Census API error");
@@ -26,53 +48,23 @@ public class CharactersStatService {
 
         Character character = characterResult.getCharacterList().get(0);
         Map<String, CharactersStatHistory> statHistories = parseStats(character);
-        
-//        Map<String, String> stats = statHistories.values().stream()
-//                .map(this::reduceTimePeriods)
-//                .flatMap(stats -> )
-        return null;
+
+        return statHistories.values().stream()
+                .flatMap(v -> {
+                    Map<String, Integer> map = new LinkedHashMap<>();
+                    map.put(v.getStatName() + "AllTime", Integer.valueOf(v.getAllTime()));
+                    map.put(v.getStatName() + "OneLifeMax", Integer.valueOf(v.getOneLifeMax()));
+                    map.put(v.getStatName() + "Last30Days", reduceDays(v.getDay()));
+                    return map.entrySet().stream();
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private CharactersStatHistoryReduced reduceTimePeriods(CharactersStatHistory statHistory) {
-        Day day = statHistory.getDay();
-        int sum = 0;
-        sum += Integer.parseInt(day.getD01());
-        sum += Integer.parseInt(day.getD02());
-        sum += Integer.parseInt(day.getD03());
-        sum += Integer.parseInt(day.getD04());
-        sum += Integer.parseInt(day.getD05());
-        sum += Integer.parseInt(day.getD06());
-        sum += Integer.parseInt(day.getD07());
-        sum += Integer.parseInt(day.getD08());
-        sum += Integer.parseInt(day.getD09());
-        sum += Integer.parseInt(day.getD10());
-        sum += Integer.parseInt(day.getD11());
-        sum += Integer.parseInt(day.getD12());
-        sum += Integer.parseInt(day.getD13());
-        sum += Integer.parseInt(day.getD14());
-        sum += Integer.parseInt(day.getD15());
-        sum += Integer.parseInt(day.getD16());
-        sum += Integer.parseInt(day.getD17());
-        sum += Integer.parseInt(day.getD18());
-        sum += Integer.parseInt(day.getD19());
-        sum += Integer.parseInt(day.getD20());
-        sum += Integer.parseInt(day.getD21());
-        sum += Integer.parseInt(day.getD22());
-        sum += Integer.parseInt(day.getD23());
-        sum += Integer.parseInt(day.getD24());
-        sum += Integer.parseInt(day.getD25());
-        sum += Integer.parseInt(day.getD26());
-        sum += Integer.parseInt(day.getD27());
-        sum += Integer.parseInt(day.getD28());
-        sum += Integer.parseInt(day.getD29());
-        sum += Integer.parseInt(day.getD30());
-
-        CharactersStatHistoryReduced reduced = new CharactersStatHistoryReduced();
-        reduced.setStatName(statHistory.getStatName());
-        reduced.setAllTime(statHistory.getAllTime());
-        reduced.setOneLifeMax(statHistory.getOneLifeMax());
-        reduced.setThirtyDays(String.valueOf(sum));
-        return reduced;
+    private int reduceDays(Map<String, Integer> days) {
+        return days.values().stream()
+                .limit(30)
+                .mapToInt(v -> v)
+                .sum();
     }
 
     private Map<String, CharactersStatHistory> parseStats(Character character) {

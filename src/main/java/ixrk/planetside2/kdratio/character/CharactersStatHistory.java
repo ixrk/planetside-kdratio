@@ -5,6 +5,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 public class CharactersStatHistory {
 
@@ -22,13 +24,13 @@ public class CharactersStatHistory {
     private String oneLifeMax;
     @SerializedName("day")
     @Expose
-    private Day day;
+    private Map<String, Integer> day;
     @SerializedName("month")
     @Expose
-    private Month month;
+    private Map<String, Integer> month;
     @SerializedName("week")
     @Expose
-    private Week week;
+    private Map<String, Integer> week;
     @SerializedName("last_save")
     @Expose
     private String lastSave;
