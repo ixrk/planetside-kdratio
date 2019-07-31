@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>PlanetSide 2 k/d</title>
 </head>
 <body>
+
+<form action="/">
+    <fieldset>
+        <label for="character_name">Character name:</label>
+        <input id="character_name" type="text" name="character_name">
+    </fieldset>
+</form>
+
+<table>
+    <tbody>
+        <tr th:each="stat : ${stats.map}">
+            <td th:text="${stat.key}"></td>
+            <td th:text="${stat.value}"></td>
+        </tr>
+    </tbody>
+</table>
 
 </body>
 </html>
