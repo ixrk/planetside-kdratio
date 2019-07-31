@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Map;
-
 @Controller
 public class OnlyOneController {
     private CharactersStatService charactersStatService;
@@ -24,7 +22,7 @@ public class OnlyOneController {
     @GetMapping
     public String controller(@RequestParam(required = false) String characterName, Model model) {
         if (characterName != null) {
-            CharactersStatDTO stats = charactersStatService.statsByCharacterName(characterName);
+            CharactersStatDTO stats = charactersStatService.kdStats(characterName);
             model.addAttribute("stats", stats);
         }
 
