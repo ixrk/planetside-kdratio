@@ -43,7 +43,7 @@ public class CharactersStatService {
     private Map<String, Integer> statsByCharacterName(String characterName) {
         CharacterResult characterResult = fetchCharacter(characterName.toLowerCase());
         if (characterResult.getReturned() != 1) {
-            throw new RuntimeException("DayBreak Census API error");
+            throw new InvalidCharacterNameException();
         }
 
         Character character = characterResult.getCharacterList().get(0);
@@ -79,8 +79,8 @@ public class CharactersStatService {
                 .addCallAdapterFactory(Java8CallAdapterFactory.create())
                 .build();
 
-        CharactersStatMethods charactersStatMethods = retrofit.create(CharactersStatMethods.class);
+        CensusApi censusApi = retrofit.create(CensusApi.class);
 
-        return charactersStatMethods.byCharacterNameLowerCase(characterNameLowerCase).join();
+        return censusApi.byCharacterNameLowerCase(characterNameLowerCase).join();
     }
 }

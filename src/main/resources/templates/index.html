@@ -10,6 +10,7 @@
     <fieldset>
         <label for="character_name">Character name:</label>
         <input id="character_name" type="text" name="characterName" th:value="${characterName}">
+        <p class="error" th:text="${invalidNameMessage}"></p>
     </fieldset>
 </form>
 
