@@ -10,9 +10,9 @@
     </parent>
     <groupId>ixrk.planetside</groupId>
     <artifactId>kdratio</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>kdratio</name>
-    <description>Spring app displaying kill/death ratio of the given player in PlanetSide 2</description>
+    <description>Spring app displaying kill/death ratio of given PlanetSide 2 player</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -67,6 +67,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
             </plugin>
         </plugins>
     </build>
