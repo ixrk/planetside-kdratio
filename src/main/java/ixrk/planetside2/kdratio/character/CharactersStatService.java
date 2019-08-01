@@ -16,7 +16,7 @@ public class CharactersStatService {
 
     private final String baseUrl = "http://census.daybreakgames.com/s:example/get/ps2:v2/";
 
-    public CharactersStatDTO kdStats(String characterName) {
+    public Map<String, String> kdStats(String characterName) {
         Map<String, Integer> allStats = statsByCharacterName(characterName);
         Map<String, Integer> kdStatsMap = allStats.entrySet().stream()
                 .filter(v -> v.getKey().startsWith("kills") || v.getKey().startsWith("deaths"))
@@ -26,7 +26,7 @@ public class CharactersStatService {
         resultMap.put("One Life Max K/D", String.format("%.3f", calculateRatio(kdStatsMap.get("killsOneLifeMax"), kdStatsMap.get("deathsOneLifeMax"))));
         resultMap.put("Last 30 Days K/D", String.format("%.3f", calculateRatio(kdStatsMap.get("killsLast30Days"), kdStatsMap.get("deathsLast30Days"))));
 
-        return new CharactersStatDTO(resultMap);
+        return resultMap;
     }
 
     private double calculateRatio(int a, int b) {
